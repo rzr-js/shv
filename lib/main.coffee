@@ -1,3 +1,3 @@
 require('node-log').setName 'APPNAME'
 
-module.exports = {}
+exports.build = require 'build'
