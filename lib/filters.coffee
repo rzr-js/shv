@@ -1,5 +1,10 @@
-module.exports =
-  pre: (coffee) ->
+filters =
+  pre: (text) ->
     cs = require 'coffee-script'
-    cs.compile coffee
+    cs.compile text
 
+  token: (token) -> token
+
+  ast: (ast) -> ast
+
+module.exports = filters
