@@ -1,5 +1,5 @@
 # get domain root and build root
-{join, dirname, exists} = require 'path'
+{join, dirname, exists, relative, basename} = require 'path'
 fs = require 'fs'
 {exec} = require 'child_process'
 {domainRoot, buildRoot, walkPath} = require './projectNav'
@@ -9,15 +9,18 @@ compileDomain = (callback) ->
   extensionChecker = new RegExp "\.#{extension}$"
   walkPath domainRoot, extensionChecker, (file) ->
 
-    # subtract domain from file path
-    relPath = file[domainRoot.length..-(extension.length + 2)]
-    buildPath = join buildRoot, relPath + '.js'
+    # determine output filename
+    relPath = relative domainRoot, file
+    baseName = basename relPath, extension
+    buildPath = join buildRoot, baseName + 'js'
 
-    # read file
+    # read input file
     fs.readFile file, 'utf8', (err, data) ->
-      console.log "in: #{file}\nout: #{buildPath}\ndata: #{data}"
+      console.log "in: #{file}, out: #{buildPath}"
 
       exec "mkdir -p #{dirname buildPath}"
+
+      # pass to callback function, save result
       fs.writeFile buildPath, callback data
 
 build = () ->
@@ -27,12 +30,6 @@ build = () ->
 
   # walk domain and execute filters
   compileDomain filters.pre
-
-  # compile all files in domain
-  #{exec} = require 'child_process'
-  #console.log "coffee -co #{buildRoot} #{domainRoot}"
-  #exec "coffee -co #{buildRoot} #{domainRoot}", (err, stdout, stderr) ->
-    #throw err if err
 
 module.exports = build
 build()
