@@ -21,7 +21,8 @@ compileDomain = (callback) ->
       exec "mkdir -p #{dirname buildPath}"
 
       # pass to callback function, save result
-      fs.writeFile buildPath, callback data
+      callback data, (result) ->
+        fs.writeFile buildPath, result
 
 build = () ->
 
@@ -29,7 +30,7 @@ build = () ->
   filters = require './filters'
 
   # walk domain and execute filters
-  compileDomain filters.pre
+  compileDomain filters.process
 
 module.exports = build
 build()
