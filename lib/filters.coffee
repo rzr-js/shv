@@ -5,18 +5,15 @@ exports.filters = filters = [
 ]
 
 curry = (fn, args...) ->
-  (a...) ->
-    fn.apply undefined, [args..., a...]
+  -> fn args..., arguments...
 
 exports.process = process = (data, callback) ->
 
   compose = (filters) ->
     [filter, filters...] = filters
 
-    console.log "#{filters.length}: #{filter}"
     return callback unless filter
 
-    console.log typeof filter
     return compose filters unless typeof filter == 'function'
 
     return curry filter, compose(filters)
